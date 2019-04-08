@@ -98,9 +98,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>
-                                jlink
-                            </executable>
+                            <executable>jlink</executable>
 
                             <longModulepath>false</longModulepath>
 
@@ -115,6 +113,26 @@
                                 <argument>start=mini/com.er453r.MiniMain</argument>
                                 <argument>--output</argument>
                                 <argument>${project.build.directory}/runtime</argument>
+                                <argument>--no-header-files</argument>
+                                <argument>--no-man-pages</argument>
+                                <argument>--compress=2</argument>
+                                <argument>--strip-debug</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>jre-strip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>find target/runtime/ -name '*.so' -exec strip -p --strip-unneeded {} \;</argument>
                             </arguments>
                         </configuration>
                     </execution>
