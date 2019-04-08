@@ -94,7 +94,7 @@
                             <arguments>
                                 <argument>--module-path</argument>
                                 <argument>
-                                    ${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar
+                                    ${project.build.directory}/${project.artifactId}-${project.version}.jar
                                 </argument>
                                 <argument>--add-modules</argument>
                                 <argument>mini</argument>
