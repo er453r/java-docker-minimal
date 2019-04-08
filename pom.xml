@@ -21,10 +21,26 @@
 
     </dependencies>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <url>http://repository.apache.org/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <sourceDirectory>src</sourceDirectory>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -45,6 +61,61 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>jre-cleanup</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>
+                                rm
+                            </executable>
+
+                            <arguments>
+                                <argument>-rf</argument>
+                                <argument>
+                                    ${project.build.directory}/runtime
+                                </argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>jre-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>
+                                jlink
+                            </executable>
+
+                            <longModulepath>false</longModulepath>
+
+                            <arguments>
+                                <argument>--module-path</argument>
+                                <argument>
+                                    ${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar
+                                </argument>
+                                <argument>--add-modules</argument>
+                                <argument>mini</argument>
+                                <argument>--launcher</argument>
+                                <argument>start=mini/com.er453r.MiniMain</argument>
+                                <argument>--output</argument>
+                                <argument>${project.build.directory}/runtime</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
