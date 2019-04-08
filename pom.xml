@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.4.RELEASE</version>
+        <version>2.1.2.RELEASE</version>
     </parent>
 
     <properties>
@@ -67,15 +67,11 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>
-                                rm
-                            </executable>
+                            <executable>bash</executable>
 
                             <arguments>
-                                <argument>-rf</argument>
-                                <argument>
-                                    ${project.build.directory}/runtime
-                                </argument>
+                                <argument>-c</argument>
+                                <argument>rm -rf ${project.build.directory}/runtime ${project.build.directory}/classes</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -94,10 +90,10 @@
                             <arguments>
                                 <argument>--module-path</argument>
                                 <argument>
-                                    ${project.build.directory}/${project.artifactId}-${project.version}.jar
+                                    ${project.build.directory}
                                 </argument>
                                 <argument>--add-modules</argument>
-                                <argument>mini</argument>
+                                <argument>mini.template</argument>
                                 <argument>--launcher</argument>
                                 <argument>start=mini/com.er453r.MiniMain</argument>
                                 <argument>--output</argument>
