@@ -1,10 +1,13 @@
 FROM adoptopenjdk/openjdk11:alpine as build
 ADD . /
 RUN \
+# tools
 apk add binutils maven && \
+# build
 mvn package && \
 cd target && \
-jar xf *.jar && \
+# analyze fat jar for all jdk dependencies
+jar xf *.jar &&  \
 cd - && \
 jdeps --multi-release 11 target/*.jar target/BOOT-INF/lib/*.jar | egrep -o 'java\.[a-z\.]+' | sort | uniq > deps.txt && \
 java --list-modules | egrep -o 'java\.[a-z\.]+' | sort | uniq > modules.txt && \
@@ -14,14 +17,16 @@ echo -e "\n[Found jdk modules]\n$(cat modules.txt)" && \
 echo -e "\n[Found jdk dependecies]\n$(cat deps.txt)" && \
 echo -e "\n[Found common jdk dependecies]\n$(cat common.txt)" && \
 echo -e "\n[Found unused jdk dependecies]\n$(cat unused.txt)" && \
+# create custom jre
 jlink --add-modules $(cat common.txt | tr '\n' ',') --output runtime --no-header-files --no-man-pages --compress=2 --strip-debug && \
-cp target/*.jar runtime/bin/app.jar && \
 find runtime -name '*.so' -exec strip -p --strip-unneeded {} \; && \
-echo -e "\n[jlink diff]\n$(du -d1 -h runtime | tail -n1)\n$(du -d1 -h $JAVA_HOME | tail -n1)\n"
+echo -e "\n[jlink diff]\n$(du -d1 -h runtime | tail -n1)\n$(du -d1 -h $JAVA_HOME | tail -n1)\n" && \
+cp target/*.jar runtime/bin/app.jar
 
 FROM alpine:latest
 COPY --from=build runtime /runtime
 
+# hint from http://blog.gilliard.lol/2018/11/05/alpine-jdk11-images.html
 RUN apk --update add --no-cache --virtual .build-deps curl binutils \
     && GLIBC_VER="2.29-r0" \
     && ALPINE_GLIBC_REPO="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" \
