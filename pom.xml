@@ -30,13 +30,6 @@
         </dependency>
     </dependencies>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>apache.snapshots</id>
-            <url>http://repository.apache.org/snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <build>
         <sourceDirectory>src</sourceDirectory>
 
@@ -53,71 +46,6 @@
                 <configuration>
                     <release>${java.version}</release>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <executions>
-                    <execution>
-                        <id>jre-cleanup</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>bash</executable>
-
-                            <arguments>
-                                <argument>-c</argument>
-                                <argument>rm -rf ${project.build.directory}/runtime ${project.build.directory}/classes</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>jre-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>jlink</executable>
-
-                            <longModulepath>false</longModulepath>
-
-                            <arguments>
-                                <argument>--add-modules</argument>
-                                <argument>java.base,java.desktop,java.instrument,java.logging,java.management,java.management.rmi,java.naming,java.prefs,java.rmi,java.scripting,java.security.jgss,java.sql,java.xml</argument>
-<!--                                <argument>-launcher</argument>-->
-<!--                                <argument>start=mini.template</argument>-->
-                                <argument>--output</argument>
-                                <argument>${project.build.directory}/runtime</argument>
-                                <argument>--no-header-files</argument>
-                                <argument>--no-man-pages</argument>
-                                <argument>--compress=2</argument>
-                                <argument>--strip-debug</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>jre-strip</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>bash</executable>
-
-                            <arguments>
-                                <argument>-c</argument>
-                                <argument>find target/runtime/ -name '*.so' -exec strip -p --strip-unneeded {} \;</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
