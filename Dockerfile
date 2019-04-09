@@ -9,9 +9,7 @@ jlink --add-modules java.base,java.desktop,java.instrument,java.logging,java.man
         --output runtime --no-header-files --no-man-pages --compress=2 --strip-debug && \
 cp target/mini-template-0.1.jar runtime/bin/app.jar && \
 find runtime -name '*.so' -exec strip -p --strip-unneeded {} \; && \
-echo "jlink diffirence:" && \
-du -d1 -h runtime | tail -n1 && \
-du -d1 -h $JAVA_HOME | tail -n1
+echo -e "\n[JLINK DIFF]\n$(du -d1 -h runtime | tail -n1)\n$(du -d1 -h $JAVA_HOME | tail -n1)\n"
 
 FROM alpine:latest
 COPY --from=build runtime /runtime
